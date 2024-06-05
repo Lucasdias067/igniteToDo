@@ -1,113 +1,101 @@
+'use client'
 import Image from "next/image";
+import RocketLogo from "../../public/rocketLogo.svg";
+import Plus from "../../public/plus.svg";
+import { useState } from "react";
+import ToDoList from "@/components/ToDoList";
+import EmptyToDoList from "@/components/EmptyToDoList";
 
-export default function Home() {
+export default function ListToDo() {
+  const [checkedItems, setCheckedItems] = useState<{ [key: string]: boolean }>({});
+  const [list, setList] = useState<string[]>([]);
+  const [task, setTask] = useState('');
+  const [doneTask, setDoneTask] = useState(0);
+
+  function handleCheckboxChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, checked } = e.target;
+    setCheckedItems(prev => ({
+      ...prev,
+      [name]: checked,
+    }));
+    if (checked) {
+      setDoneTask(prev => prev + 1);
+    } else {
+      setDoneTask(prev => prev - 1);
+    }
+  }
+  function handleTaskChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setTask(e.target.value);
+  }
+
+  function handleCreateTask(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const isSameTask = list.includes(task.trim());
+    if (isSameTask || task.trim() === '') {
+      alert('Tente novamente!');
+      return;
+    }
+
+    setList([...list, task]);
+    setTask('');
+  }
+
+  function handleDeleteTask(task: string) {
+    const newList = list.filter((name) => name !== task);
+    setList(newList);
+    setCheckedItems(prev => ({
+      ...prev,
+      [task]: false,
+    }));
+
+    if (doneTask > 0) setDoneTask(prev => prev - 1);
+  }
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+    <main className="relative">
+      <header className="bg-zinc-950 h-[12.5rem] flex items-center justify-center">
+        <Image src={RocketLogo} alt="Rocket Logo" />
+      </header>
+      <form
+        onSubmit={handleCreateTask}
+        className="absolute top-[10.7rem] left-1/2 transform -translate-x-1/2 flex gap-2 justify-center h-14 w-full max-w-3xl px-4">
+        <input
+          value={task}
+          onChange={handleTaskChange}
+          type="text"
+          className="p-2 flex-1 border text-zinc-200 border-black rounded bg-zinc-800 placeholder:text-zinc-500"
+          placeholder="Adicione uma nova tarefa"
         />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+        <button
+          className="font-bold rounded flex min-w-20 items-center justify-center gap-2 text-white text bg-sky-700 hover:bg-sky-800">
+          Criar
+          <Image src={Plus} alt="Plus" />
+        </button>
+      </form>
+      <div className="bg-zinc-900 h-screen">
+        <div className="max-w-3xl mx-auto py-24 px-4 flex flex-col gap-6">
+          <div className="text-sm flex items-center justify-between font-bold">
+            <p className="text-sky-400 ">
+              Tarefas criadas
+              <span className="bg-zinc-800 rounded px-2 ml-2 text-white">{list.length}</span>
+            </p>
+            <p className="text-violet-400">
+              Concluídas
+              <span className="bg-zinc-800 rounded px-2 ml-2 text-white">{doneTask} de {list.length}</span>
+            </p>
+          </div>
+          {list.length > 0
+            ? <ToDoList
+              handleDeleteTask={handleDeleteTask}
+              list={list}
+              handleCheckboxChange={handleCheckboxChange}
+              checkedItems={checkedItems} />
+            : <EmptyToDoList />
+          }
+        </div>
       </div>
     </main>
   );
 }
+
+
