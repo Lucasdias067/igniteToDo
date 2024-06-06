@@ -33,6 +33,7 @@ export default function ListToDo() {
     const isSameTask = list.includes(task.trim());
     if (isSameTask || task.trim() === '') {
       alert('Tente novamente!');
+      setTask('');
       return;
     }
 
@@ -61,6 +62,7 @@ export default function ListToDo() {
         className="absolute top-[10.7rem] left-1/2 transform -translate-x-1/2 flex gap-2 justify-center h-14 w-full max-w-3xl px-4">
         <input
           value={task}
+          maxLength={50}
           onChange={handleTaskChange}
           type="text"
           className="p-2 flex-1 border text-zinc-200 border-black rounded bg-zinc-800 placeholder:text-zinc-500"

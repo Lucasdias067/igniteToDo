@@ -1,22 +1,34 @@
-import { RiDeleteBin6Line } from "react-icons/ri";
+import React, { useState } from 'react';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 
-type isCheckedProps = {
-  [key: string]: boolean
-}
+type CheckBoxProps = {
+  handleCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  checkedItems: { [key: string]: boolean };
+  list: string[];
+  handleDeleteTask: (item: string) => void;
+};
 
-interface checkBoxProps {
-  handleCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  handleDeleteTask: (task: string) => void
-  checkedItems: isCheckedProps
-  list: string[]
-}
+const ITEMS_PER_PAGE = 5;
 
-export default function ToDoList({ handleCheckboxChange, checkedItems, list, handleDeleteTask }: checkBoxProps) {
+export default function ToDoList({ handleCheckboxChange, checkedItems, list, handleDeleteTask }: CheckBoxProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(list.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentPageItems = list.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handlePreviousPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  };
 
   return (
-    <div>
+    <div className="flex flex-col gap-8">
       <ul className="flex flex-col gap-2">
-        {list.map((item, index) => (
+        {currentPageItems.map((item, index) => (
           <li className="w-full bg-zinc-800 rounded p-5" key={index}>
             <div className="flex items-baseline gap-4">
               <div className="flex gap-2 relative">
@@ -55,6 +67,23 @@ export default function ToDoList({ handleCheckboxChange, checkedItems, list, han
           </li>
         ))}
       </ul>
+      <div className="flex justify-between items-center">
+        <button
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
+          className="text-zinc-300 p-2 rounded bg-zinc-700 hover:bg-zinc-600 disabled:bg-zinc-900"
+        >
+          Prev
+        </button>
+        <span className="text-zinc-300">{`Page ${currentPage} of ${totalPages}`}</span>
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
+          className="text-zinc-300 p-2 rounded bg-zinc-700 hover:bg-zinc-600 disabled:bg-zinc-900"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }
