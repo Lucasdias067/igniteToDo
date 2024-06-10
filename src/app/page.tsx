@@ -2,7 +2,7 @@
 import Image from "next/image";
 import RocketLogo from "../../public/rocketLogo.svg";
 import Plus from "../../public/plus.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ToDoList from "@/components/ToDoList";
 import EmptyToDoList from "@/components/EmptyToDoList";
 
@@ -12,6 +12,8 @@ export default function ListToDo() {
   const [task, setTask] = useState('');
   const [doneTask, setDoneTask] = useState(0);
 
+  let doneTaskCount = 0;
+
   function handleCheckboxChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, checked } = e.target;
     setCheckedItems(prev => ({
@@ -20,10 +22,11 @@ export default function ListToDo() {
     }));
     if (checked) {
       setDoneTask(prev => prev + 1);
-    } else {
+    } else if (doneTask > 0) {
       setDoneTask(prev => prev - 1);
     }
   }
+
   function handleTaskChange(e: React.ChangeEvent<HTMLInputElement>) {
     setTask(e.target.value);
   }
@@ -43,14 +46,35 @@ export default function ListToDo() {
 
   function handleDeleteTask(task: string) {
     const newList = list.filter((name) => name !== task);
-    setList(newList);
-    setCheckedItems(prev => ({
-      ...prev,
-      [task]: false,
-    }));
+    if (doneTask > 0 && checkedItems[task]) setDoneTask(prev => prev - 1);
 
-    if (doneTask > 0) setDoneTask(prev => prev - 1);
+    setList(newList);
+    setCheckedItems(prev => ({ ...prev, [task]: false, }));
+    localStorage.setItem('tasks', JSON.stringify(newList));
+    localStorage.setItem('checkedItems', JSON.stringify(checkedItems));
+    ;
   }
+
+
+  useEffect(() => {
+    if (list.length) localStorage.setItem('tasks', JSON.stringify(list));
+    if (Object.values(checkedItems).length) {
+      localStorage.setItem('checkedItems', JSON.stringify(checkedItems));
+      Object.values(checkedItems).forEach((item) => item === true && doneTaskCount++)
+      localStorage.setItem('doneTaskCount', JSON.stringify(doneTaskCount));
+    };
+
+  }, [list, checkedItems, doneTask, doneTaskCount]);
+
+  useEffect(() => {
+    const myTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+    const myCheckedItems = JSON.parse(localStorage.getItem('checkedItems') || '{}');
+    const myDoneTaskCount = JSON.parse(localStorage.getItem('doneTaskCount') || '0');
+
+    setCheckedItems(myCheckedItems);
+    setList([...myTasks]);
+    setDoneTask(myDoneTaskCount);
+  }, [doneTaskCount]);
 
   return (
     <main className="relative">
