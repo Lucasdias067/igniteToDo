@@ -30,10 +30,11 @@ export default function ToDoList({ handleCheckboxChange, checkedItems, list, han
       <ul className="flex flex-col gap-2">
         {currentPageItems.map((item, index) => (
           <li className="w-full bg-zinc-800 rounded p-5" key={index}>
-            <div className="flex items-baseline gap-4">
+            <label htmlFor={item} className="flex items-baseline gap-4 cursor-pointer">
               <div className="flex gap-2 relative">
                 <input
                   name={item}
+                  id={item}
                   type="checkbox"
                   checked={checkedItems[item] || false}
                   onChange={handleCheckboxChange}
@@ -55,7 +56,7 @@ export default function ToDoList({ handleCheckboxChange, checkedItems, list, han
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
               </div>
-              <p className={`flex-1 text-zinc-200 ${checkedItems[item] ? "line-through text-zinc-500" : ""}`}>
+              <p className={`flex-1 text-zinc-200 ${checkedItems[item] ? "line-through text-zinc-500" : ""}`} >
                 {item}
               </p>
               <button
@@ -63,7 +64,7 @@ export default function ToDoList({ handleCheckboxChange, checkedItems, list, han
                 className=" text-zinc-300 p-[0.1rem] rounded hover:text-rose-500 hover:bg-zinc-600">
                 <RiDeleteBin6Line />
               </button>
-            </div>
+            </label>
           </li>
         ))}
       </ul>
