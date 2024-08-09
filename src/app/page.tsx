@@ -52,7 +52,6 @@ export default function ListToDo() {
     setCheckedItems(prev => ({ ...prev, [task]: false, }));
     localStorage.setItem('tasks', JSON.stringify(newList));
     localStorage.setItem('checkedItems', JSON.stringify(checkedItems));
-    ;
   }
 
 
@@ -114,6 +113,7 @@ export default function ListToDo() {
             ? <ToDoList
               handleDeleteTask={handleDeleteTask}
               list={list}
+              setList={setList}
               handleCheckboxChange={handleCheckboxChange}
               checkedItems={checkedItems} />
             : <EmptyToDoList />
