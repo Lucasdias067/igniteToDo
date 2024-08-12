@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -97,9 +98,10 @@ export default function ToDoList({ handleCheckboxChange, checkedItems, list, han
                       <RiEdit2Line />
                     </button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-min bg-zinc-900" aria-describedby={undefined}>
+                  <DialogContent className="max-w-min bg-zinc-900">
                     <DialogHeader className='space-y-5'>
                       <DialogTitle className="text-zinc-300 text-center">Editar Tarefa</DialogTitle>
+                      <DialogDescription className='line-through'>{item}</DialogDescription>
                       <div className="flex gap-4">
                         <input
                           value={newListEdit}
