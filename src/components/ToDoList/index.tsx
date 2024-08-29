@@ -15,14 +15,18 @@ import {
 type CheckBoxProps = {
   handleCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   checkedItems: { [key: string]: boolean };
+  setCheckedItems: React.Dispatch<React.SetStateAction<{
+    [key: string]: boolean;
+  }>>
   list: string[];
   setList: React.Dispatch<React.SetStateAction<string[]>>
   handleDeleteTask: (item: string) => void;
+  setDoneTask: (value: React.SetStateAction<number>) => void
 };
 
 const ITEMS_PER_PAGE = 5;
 
-export default function ToDoList({ handleCheckboxChange, checkedItems, list, handleDeleteTask, setList }: CheckBoxProps) {
+export default function ToDoList({ setDoneTask, handleCheckboxChange, checkedItems, setCheckedItems, list, handleDeleteTask, setList }: CheckBoxProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [newListEdit, setNewListEdit] = useState('');
 
@@ -46,12 +50,15 @@ export default function ToDoList({ handleCheckboxChange, checkedItems, list, han
     const newList = [...list]
     const itemIndex = newList.indexOf(item)
     newList[itemIndex] = newListEdit
+
     if (newList[itemIndex].trim() === '') {
       alert('Tente novamente!');
       setNewListEdit('')
       return;
     }
 
+    setCheckedItems(prev => ({ ...prev, [item]: false }))
+    setDoneTask(prev => prev - 1)
     setList(newList)
     setNewListEdit('')
   }

@@ -111,9 +111,11 @@ export default function ListToDo() {
           </div>
           {list.length > 0
             ? <ToDoList
+              setDoneTask={setDoneTask}
               handleDeleteTask={handleDeleteTask}
               list={list}
               setList={setList}
+              setCheckedItems={setCheckedItems}
               handleCheckboxChange={handleCheckboxChange}
               checkedItems={checkedItems} />
             : <EmptyToDoList />
