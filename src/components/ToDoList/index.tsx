@@ -20,19 +20,32 @@ type CheckBoxProps = {
   }>>
   list: string[];
   setList: React.Dispatch<React.SetStateAction<string[]>>
-  handleDeleteTask: (item: string) => void;
   setDoneTask: (value: React.SetStateAction<number>) => void
+  doneTask: number
 };
 
 const ITEMS_PER_PAGE = 5;
 
-export default function ToDoList({ setDoneTask, handleCheckboxChange, checkedItems, setCheckedItems, list, handleDeleteTask, setList }: CheckBoxProps) {
+export default function ToDoList({ setDoneTask, doneTask, handleCheckboxChange, checkedItems, setCheckedItems, list, setList }: CheckBoxProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [newListEdit, setNewListEdit] = useState('');
 
   const totalPages = Math.ceil(list.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentPageItems = list.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  function handleDeleteTask(task: string) {
+    const newList = list.filter((name) => name !== task);
+    const newTotalPages = Math.ceil(newList.length / ITEMS_PER_PAGE);
+    if (doneTask > 0 && checkedItems[task]) setDoneTask(prev => prev - 1);
+
+    setList(newList);
+    setCheckedItems(prev => ({ ...prev, [task]: false, }));
+    setCurrentPage(newTotalPages)
+    localStorage.setItem('tasks', JSON.stringify(newList));
+    localStorage.setItem('checkedItems', JSON.stringify(checkedItems));
+  }
+
 
   const handlePreviousPage = () => {
     setCurrentPage(prev => Math.max(prev - 1, 1));
@@ -49,9 +62,11 @@ export default function ToDoList({ setDoneTask, handleCheckboxChange, checkedIte
   function handleEditTask(item: string) {
     const newList = [...list]
     const itemIndex = newList.indexOf(item)
+    const isSameTask = list.includes(item.trim());
+
     newList[itemIndex] = newListEdit
 
-    if (newList[itemIndex].trim() === '') {
+    if (newList[itemIndex].trim() === '' || isSameTask) {
       alert('Tente novamente!');
       setNewListEdit('')
       return;
@@ -108,10 +123,11 @@ export default function ToDoList({ setDoneTask, handleCheckboxChange, checkedIte
                   <DialogContent className="max-w-min bg-zinc-900">
                     <DialogHeader className='space-y-5'>
                       <DialogTitle className="text-zinc-300 text-center">Editar Tarefa</DialogTitle>
-                      <DialogDescription className='line-through'>{item}</DialogDescription>
+                      <DialogDescription>Tarefa anterior: {item}</DialogDescription>
                       <div className="flex gap-4">
                         <input
                           value={newListEdit}
+                          defaultValue={item}
                           onChange={handleEditChange}
                           type="text"
                           placeholder='Escreva a nova tarefa'

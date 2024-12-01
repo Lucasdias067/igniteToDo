@@ -40,20 +40,9 @@ export default function ListToDo() {
       return;
     }
 
-    setList([...list, task]);
+    setList([task, ...list]);
     setTask('');
   }
-
-  function handleDeleteTask(task: string) {
-    const newList = list.filter((name) => name !== task);
-    if (doneTask > 0 && checkedItems[task]) setDoneTask(prev => prev - 1);
-
-    setList(newList);
-    setCheckedItems(prev => ({ ...prev, [task]: false, }));
-    localStorage.setItem('tasks', JSON.stringify(newList));
-    localStorage.setItem('checkedItems', JSON.stringify(checkedItems));
-  }
-
 
   useEffect(() => {
     if (list.length) localStorage.setItem('tasks', JSON.stringify(list));
@@ -112,7 +101,7 @@ export default function ListToDo() {
           {list.length > 0
             ? <ToDoList
               setDoneTask={setDoneTask}
-              handleDeleteTask={handleDeleteTask}
+              doneTask = {doneTask}
               list={list}
               setList={setList}
               setCheckedItems={setCheckedItems}
