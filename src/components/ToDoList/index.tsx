@@ -62,18 +62,23 @@ export default function ToDoList({ setDoneTask, doneTask, handleCheckboxChange, 
   function handleEditTask(item: string) {
     const newList = [...list]
     const itemIndex = newList.indexOf(item)
-    const isSameTask = list.includes(item.trim());
-
     newList[itemIndex] = newListEdit
 
-    if (newList[itemIndex].trim() === '' || isSameTask) {
-      alert('Tente novamente!');
+    const itemEmpty = newList[itemIndex].trim() === ''
+    const itemDuplicate = list.includes(newList[itemIndex])
+
+    if (itemEmpty) {
+      alert('Preencha o campo');
       setNewListEdit('')
       return;
     }
 
-    setCheckedItems(prev => ({ ...prev, [item]: false }))
-    setDoneTask(prev => prev - 1)
+    if (itemDuplicate) {
+      alert('Esta tarefa já existe na sua lista!');
+      setNewListEdit('')
+      return;
+    }
+
     setList(newList)
     setNewListEdit('')
   }
@@ -116,6 +121,7 @@ export default function ToDoList({ setDoneTask, doneTask, handleCheckboxChange, 
                 <Dialog>
                   <DialogTrigger asChild>
                     <button
+                      disabled={checkedItems[item]}
                       className="text-zinc-300 p-1 rounded hover:text-teal-500">
                       <RiEdit2Line />
                     </button>
@@ -127,7 +133,6 @@ export default function ToDoList({ setDoneTask, doneTask, handleCheckboxChange, 
                       <div className="flex gap-4">
                         <input
                           value={newListEdit}
-                          defaultValue={item}
                           onChange={handleEditChange}
                           type="text"
                           placeholder='Escreva a nova tarefa'
