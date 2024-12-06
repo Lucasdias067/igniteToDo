@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { RiDeleteBin6Line } from 'react-icons/ri';
-import { RiEdit2Line } from "react-icons/ri";
+import { RiDeleteBin6Line, RiEdit2Line, RiFileCopyLine } from 'react-icons/ri';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import {
   Dialog,
   DialogClose,
@@ -36,16 +36,15 @@ export default function ToDoList({ setDoneTask, doneTask, handleCheckboxChange, 
 
   function handleDeleteTask(task: string) {
     const newList = list.filter((name) => name !== task);
-    const newTotalPages = Math.ceil(newList.length / ITEMS_PER_PAGE);
     if (doneTask > 0 && checkedItems[task]) setDoneTask(prev => prev - 1);
 
     setList(newList);
+    setCurrentPage(1)
     setCheckedItems(prev => ({ ...prev, [task]: false, }));
-    setCurrentPage(newTotalPages)
+
     localStorage.setItem('tasks', JSON.stringify(newList));
     localStorage.setItem('checkedItems', JSON.stringify(checkedItems));
   }
-
 
   const handlePreviousPage = () => {
     setCurrentPage(prev => Math.max(prev - 1, 1));
@@ -129,7 +128,14 @@ export default function ToDoList({ setDoneTask, doneTask, handleCheckboxChange, 
                   <DialogContent className="max-w-min bg-zinc-900">
                     <DialogHeader className='space-y-5'>
                       <DialogTitle className="text-zinc-300 text-center">Editar Tarefa</DialogTitle>
-                      <DialogDescription>Tarefa anterior: {item}</DialogDescription>
+                      <DialogDescription className='flex items-center justify-between'>
+                        Tarefa anterior: {item}
+                        <CopyToClipboard text={item}>
+                          <button className='cursor-pointer hover:text-sky-400'>
+                            <RiFileCopyLine />
+                          </button>
+                        </CopyToClipboard>
+                      </DialogDescription>
                       <div className="flex gap-4">
                         <input
                           value={newListEdit}
